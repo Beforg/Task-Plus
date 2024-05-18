@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task+</title>
+    <link rel="stylesheet" href="reset.css">
+    <link rel="stylesheet" href="style.css">
+    
+    
+</head>
+<body>
+    <header class="cabecalho">
+        <img src="./img/logo.png" alt="Logo do TaskPlus" class="cabecalho__logo">
+        <img src="./img/notification.png" alt="Sino de notificacao" class="cabecalho__notificacao">
+    </header>
+    <section class="conteudo">
+        <div class="conteudo__menu">
+            <p class="conteudo__texto">Criar</p>
+            <button class="menu__botao-padrao" id="botao-add-tarefa">Adicionar tarefa</button>
+            <div class="conteudo__escondido" id="conteudo__add-tarefa">
+                <input type="text" class="menu__input" placeholder="Nome da tarefa" id="tf-nome">
+                <input type="text" class="menu__input" placeholder="Descrição da tarefa" id="tf-descricao">
+                <input type="date" class="menu__input" id="tf-data">
+                <button class="menu__botao-padrao" id="requisicao-post">Adicionar</button>
+            </div>
+            <hr>
+            <p class="conteudo__texto">Filtros</p>
+            <button class="menu__botao-escolha-padrao" id="botao-filtrar-tarefa">Filtrar</button>
+            <div class="conteudo__escondido" id="conteudo__filtrar-tarefa">
+                <button class="menu__botao-escolha-padrao-filtro" id="botao-concluidas">Concluídas</button>
+                <button class="menu__botao-escolha-padrao-filtro" id="botao-pendentes">Pendentes</button>
+            </div>
+            <hr>
+            <p class="conteudo__texto">Gerenciamento</p>
+            <button class="menu__botao-padrao-disable" id="editar">Editar</button>
+            <div class="conteudo__escondido" id="conteudo__editar-tarefa">
+                <input type="text" class="menu__input" placeholder="Nome da tarefa" id="tf-editar-nome">
+                <input type="text" class="menu__input" placeholder="Descrição da tarefa" id="tf-editar-desc">
+                <input type="date" class="menu__input" id="tf-editar-data">
+                <button class="menu__botao-escolha-padrao-filtro" id="botao-editar">Salvar</button>
+            </div>
+            <button class="menu__botao-padrao-excluir-disable" id="excluir">Excluir</button>
+        </div>
+        <div class="conteudo__principal">
+            <p class="principal__titulo">Minhas tarefas:</p>
+            <ul class="conteudo__principal-tarefas" id="lista-com-tarefas">
+            </ul>
+        </div>
+    </section>
+    <script src="script.js"></script>
+</body>
+</html>
