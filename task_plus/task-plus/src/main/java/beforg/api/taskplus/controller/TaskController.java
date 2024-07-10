@@ -1,9 +1,9 @@
 package beforg.api.taskplus.controller;
 
-import beforg.api.taskplus.dto.TaskConcluidaDto;
-import beforg.api.taskplus.dto.TaskDto;
-import beforg.api.taskplus.model.Task;
-import beforg.api.taskplus.repository.TaskRepository;
+import beforg.api.taskplus.domain.task.ConcluidaDto;
+import beforg.api.taskplus.domain.task.TaskDto;
+import beforg.api.taskplus.domain.task.Task;
+import beforg.api.taskplus.repositories.TaskRepository;
 import beforg.api.taskplus.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,7 @@ public class TaskController {
 
     @PutMapping("/{id}/concluir")
     @Transactional
-    public ResponseEntity<String> concluirTarefa(@PathVariable Long id, @RequestBody @Valid TaskConcluidaDto dto) {
+    public ResponseEntity<String> concluirTarefa(@PathVariable Long id, @RequestBody @Valid ConcluidaDto dto) {
         Task task = taskRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Tarefa não encontrada"));
         task.setConcluido(dto.concluido());
         taskRepository.save(task);

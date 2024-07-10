@@ -1,4 +1,4 @@
-package beforg.api.taskplus.security;
+package beforg.api.taskplus.infra.security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;

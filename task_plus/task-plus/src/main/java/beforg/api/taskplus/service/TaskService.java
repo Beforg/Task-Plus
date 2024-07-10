@@ -1,7 +1,7 @@
 package beforg.api.taskplus.service;
 
-import beforg.api.taskplus.dto.TaskDto;
-import beforg.api.taskplus.repository.TaskRepository;
+import beforg.api.taskplus.domain.task.TaskDto;
+import beforg.api.taskplus.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
