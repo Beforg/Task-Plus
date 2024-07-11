@@ -2,8 +2,6 @@ package beforg.api.taskplus.controller;
 
 import beforg.api.taskplus.domain.task.ConcluidaDto;
 import beforg.api.taskplus.domain.task.TaskDto;
-import beforg.api.taskplus.domain.task.Task;
-import beforg.api.taskplus.repositories.TaskRepository;
 import beforg.api.taskplus.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +17,11 @@ public class TaskController {
 
     @Autowired
     private TaskService taskService;
-    @Autowired
-    private TaskRepository taskRepository;
 
     @PostMapping
     @Transactional
     public ResponseEntity<String> criarTarefa(@RequestBody @Valid TaskDto taskDto) {
-        taskRepository.save(new Task(taskDto.nome(), taskDto.descricao(), taskDto.data()));
+        taskService.criar(taskDto);
         return ResponseEntity.ok().build();
     }
     @GetMapping
@@ -40,28 +36,22 @@ public class TaskController {
         return ResponseEntity.ok(tarefas);
     }
 
-    @PutMapping("/{id}/concluir")
+    @PutMapping("/concluir")
     @Transactional
-    public ResponseEntity<String> concluirTarefa(@PathVariable Long id, @RequestBody @Valid ConcluidaDto dto) {
-        Task task = taskRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Tarefa não encontrada"));
-        task.setConcluido(dto.concluido());
-        taskRepository.save(task);
+    public ResponseEntity<String> concluirTarefa(@RequestBody @Valid ConcluidaDto dto) {
+        taskService.concluir(dto);
         return ResponseEntity.ok().build();
     }
     @PutMapping("/atualizar")
     @Transactional
     public ResponseEntity<String> atualizarTarefa(@RequestBody @Valid TaskDto taskDto) {
-        Task task = taskRepository.findById(taskDto.id()).orElseThrow(() -> new IllegalArgumentException("Tarefa não encontrada"));
-        task.setNome(taskDto.nome());
-        task.setDescricao(taskDto.descricao());
-        task.setData(taskDto.data());
-        taskRepository.save(task);
+        taskService.atualizar(taskDto);
         return ResponseEntity.ok().build();
     }
     @DeleteMapping("/{id}")
     @Transactional
     public ResponseEntity<Void> deletarTarefa(@PathVariable Long id) {
-        taskRepository.deleteById(id);
+        taskService.deletar(id);
         return ResponseEntity.ok().build();
     }
 }
