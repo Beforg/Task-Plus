@@ -119,31 +119,32 @@ async function editarTarefa(id, nome, descricao, data) {
 }
 /*Elementos*/
 
-const nomeTarefa = document.getElementById('tf-nome');
-const descricaoTarefa = document.getElementById('tf-descricao');
-const dataTarefa = document.getElementById('tf-data');
-const btAddTarefa = document.getElementById('botao-add-tarefa');
-const btFiltrarTarefa = document.getElementById('botao-filtrar-tarefa');
-const botoesEscolhas = document.querySelectorAll('.menu__botao-escolha-padrao');
-const botaoPostTarefa = document.getElementById('requisicao-post');
-const divAddTarefa = document.getElementById('conteudo__add-tarefa');
-const divFiltrarTarefa = document.getElementById('conteudo__filtrar-tarefa');
-const tfNome = document.getElementById('tf-nome');
-const tfDescricao = document.getElementById('tf-descricao');
-const tfData = document.getElementById('tf-data');
-const btEditar = document.getElementById('editar')
-const btExcluir = document.getElementById('excluir')
-const divEditarTarefa = document.getElementById('conteudo__editar-tarefa');
-const btConcluidas = document.getElementById('botao-concluidas');
-const btPendentes = document.getElementById('botao-pendentes');
-const editarNome = document.getElementById('tf-editar-nome');
-const editarDescricao = document.getElementById('tf-editar-desc');
-const editarData = document.getElementById('tf-editar-data');
-const btEditarTarefa = document.getElementById('botao-editar');
-let idTarefaSelecionada = null;
-let nomeTarefaSelecionada = null;
-let descricaoTarefaSelecionada = null;
-let dataTarefaSelecionada = null;
+const nomeTarefa = document.getElementById('tf-nome') as HTMLInputElement;
+const descricaoTarefa = document.getElementById('tf-descricao') as HTMLInputElement;
+const dataTarefa = document.getElementById('tf-data')  as HTMLInputElement;
+const btAddTarefa = document.getElementById('botao-add-tarefa') as HTMLButtonElement;
+const btFiltrarTarefa = document.getElementById('botao-filtrar-tarefa') as HTMLButtonElement;
+const botoesEscolhas = document.querySelectorAll('.menu__botao-escolha-padrao') as NodeListOf<HTMLButtonElement>;
+const botaoPostTarefa = document.getElementById('requisicao-post') as HTMLButtonElement;
+const divAddTarefa = document.getElementById('conteudo__add-tarefa') as HTMLDivElement;
+const divFiltrarTarefa = document.getElementById('conteudo__filtrar-tarefa') as HTMLDivElement;
+const tfNome = document.getElementById('tf-nome') as HTMLInputElement;
+const tfDescricao = document.getElementById('tf-descricao') as HTMLInputElement;
+const tfData = document.getElementById('tf-data') as HTMLInputElement;
+const btEditar = document.getElementById('editar') as HTMLButtonElement;
+const btExcluir = document.getElementById('excluir') as HTMLButtonElement;
+const divEditarTarefa = document.getElementById('conteudo__editar-tarefa') as HTMLDivElement;
+const btConcluidas = document.getElementById('botao-concluidas') as HTMLButtonElement;
+const btPendentes = document.getElementById('botao-pendentes') as HTMLButtonElement; 
+const editarNome = document.getElementById('tf-editar-nome') as HTMLInputElement;
+const editarDescricao = document.getElementById('tf-editar-desc') as HTMLInputElement;
+const editarData = document.getElementById('tf-editar-data') as HTMLInputElement;
+const btEditarTarefa = document.getElementById('botao-editar') as HTMLButtonElement;
+
+let idTarefaSelecionada:number = null;
+let nomeTarefaSelecionada:string = null;
+let descricaoTarefaSelecionada:string = null;
+let dataTarefaSelecionada:string = null;
 
 
 btPendentes.addEventListener('click', atualizaTarefas);
@@ -205,14 +206,14 @@ btFiltrarTarefa.addEventListener('click', () => {
 /*Carregar tarefa da API e colocar na aplicação:*/
 
 function carregarTarefasParaLista(nome,data,descricao,concluido,id) {
-    const listaTarefas = document.getElementById('lista-com-tarefas');
-    const tarefa = document.createElement('li');
+    const listaTarefas = document.getElementById('lista-com-tarefas') as HTMLUListElement;
+    const tarefa = document.createElement('li') as HTMLLIElement;
     tarefa.className = 'principal-tarefas-item';
     
     const dataRecebida = new Date(data);
-    const formatacaoTipo = { year: 'numeric', month: '2-digit', day: '2-digit' };
+    const formatacaoTipo = { year: 'numeric', month: '2-digit', day: '2-digit' } as Intl.DateTimeFormatOptions;
     const dataFormatada = dataRecebida.toLocaleDateString('pt-BR', formatacaoTipo);
-
+    
     tarefa.innerHTML = `
         <input type="checkbox" class="tarefa__checkbox">
         <span class="tarefa__nome">${nome}</span>
@@ -222,7 +223,7 @@ function carregarTarefasParaLista(nome,data,descricao,concluido,id) {
     `;
 
     if (concluido) {
-        const cb = tarefa.querySelector(".tarefa__checkbox");
+        const cb = tarefa.querySelector(".tarefa__checkbox") as HTMLInputElement;
         cb.checked = true;
     }
     
@@ -232,7 +233,7 @@ function carregarTarefasParaLista(nome,data,descricao,concluido,id) {
         nomeTarefaSelecionada = nome;
         descricaoTarefaSelecionada = descricao;
         dataTarefaSelecionada = data;
-        const cb = this.querySelector(".tarefa__checkbox");
+        const cb = this.querySelector(".tarefa__checkbox") as HTMLInputElement;
         
         if (event.target === cb) {
             const id = this.querySelector("p").textContent;
