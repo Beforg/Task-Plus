@@ -5,118 +5,122 @@
 
 /*Conexao com a API*/
 
-const url = 'http://localhost:8080/task'
+import {adicionarTarefa, carregarTarefas, concluirTarefa, carregarTarefasConcluidas, excluirTarefa, editarTarefa} from './apiService.js';
+import {avisoTarefa, avisoTarefaErro, mostrarEditarTarefa, limpaCamposEditarTarefa} from './utils.js';
+import {validaCamposTarefa} from './validation.js';
+
 atualizaTarefas();
+// const url = 'http://localhost:8080/task'
 
-async function adicionarTarefa(nome, descricao, data) {
-    console.log(data);
-    const conexao = await fetch(url,  {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            nome: nome,
-            descricao: descricao,
-            data: data,
-            concluido: false
-        })
-    })
+// async function adicionarTarefa(nome, descricao, data) {
+//     console.log(data);
+//     const conexao = await fetch(url,  {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify({
+//             nome: nome,
+//             descricao: descricao,
+//             data: data,
+//             concluido: false
+//         })
+//     })
 
-    if (!conexao.ok) {
-        throw new Error(`HTTP error! status: ${conexao.status}`);
-    } else if (conexao.headers.get("content-type") && conexao.headers.get("content-type").includes("application/json")) {
-        const conexaoConvertida = await conexao.json();
-        return conexaoConvertida;
-    } else {
-        return;
-    }
+//     if (!conexao.ok) {
+//         throw new Error(`HTTP error! status: ${conexao.status}`);
+//     } else if (conexao.headers.get("content-type") && conexao.headers.get("content-type").includes("application/json")) {
+//         const conexaoConvertida = await conexao.json();
+//         return conexaoConvertida;
+//     } else {
+//         return;
+//     }
     
-}
+// }
 
-async function carregarTarefas() {
-    const conexao = await fetch(url);
-    if (!conexao.ok) {
-        throw new Error(`HTTP error! status: ${conexao.status}`);
-    } else if (conexao.headers.get("content-type") && conexao.headers.get("content-type").includes("application/json")) {
-        const conexaoConvertida = await conexao.json();
-        return conexaoConvertida;
-    } else {
-        return;
-    }
-}
+// async function carregarTarefas() {
+//     const conexao = await fetch(url);
+//     if (!conexao.ok) {
+//         throw new Error(`HTTP error! status: ${conexao.status}`);
+//     } else if (conexao.headers.get("content-type") && conexao.headers.get("content-type").includes("application/json")) {
+//         const conexaoConvertida = await conexao.json();
+//         return conexaoConvertida;
+//     } else {
+//         return;
+//     }
+// }
 
-async function concluirTarefa(id, booleano) {
-    const conexao = await fetch(`${url}/concluir`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            concluido: booleano,
-            id: id
-        })
-    });
+// async function concluirTarefa(id, booleano) {
+//     const conexao = await fetch(`${url}/concluir`, {
+//         method: 'PUT',
+//         headers: {
+//             'Content-Type': 'application/json'
+//         },
+//         body: JSON.stringify({
+//             concluido: booleano,
+//             id: id
+//         })
+//     });
 
-    if (!conexao.ok) {
-        throw new Error(`HTTP error! status: ${conexao.status}`);
-    } else if (conexao.headers.get("content-type") && conexao.headers.get("content-type").includes("application/json")) {
-        const conexaoConvertida = await conexao.json();
-        return conexaoConvertida;
-    } else {
-        return;
-    }
-}
+//     if (!conexao.ok) {
+//         throw new Error(`HTTP error! status: ${conexao.status}`);
+//     } else if (conexao.headers.get("content-type") && conexao.headers.get("content-type").includes("application/json")) {
+//         const conexaoConvertida = await conexao.json();
+//         return conexaoConvertida;
+//     } else {
+//         return;
+//     }
+// }
 
-async function carregarTarefasConcluidas(){
-    const conexao = await fetch(`${url}/concluidas`);
-    if (!conexao.ok) {
-        throw new Error(`HTTP error! status: ${conexao.status}`);
-    } else if (conexao.headers.get("content-type") && conexao.headers.get("content-type").includes("application/json")) {
-        const conexaoConvertida = await conexao.json();
-        return conexaoConvertida;
-    } else {
-        return;
-    }
-}
+// async function carregarTarefasConcluidas(){
+//     const conexao = await fetch(`${url}/concluidas`);
+//     if (!conexao.ok) {
+//         throw new Error(`HTTP error! status: ${conexao.status}`);
+//     } else if (conexao.headers.get("content-type") && conexao.headers.get("content-type").includes("application/json")) {
+//         const conexaoConvertida = await conexao.json();
+//         return conexaoConvertida;
+//     } else {
+//         return;
+//     }
+// }
 
-async function excluirTarefa(id) {
-    if (!id) throw new Error('ID não informado!');
-    const conexao = await fetch(`${url}/${id}`, {
-        method: 'DELETE'
-    });
-    if (!conexao.ok) {
-        throw new Error(`HTTP error! status: ${conexao.status}`);
-    } else if (conexao.headers.get("content-type") && conexao.headers.get("content-type").includes("application/json")) {
-        const conexaoConvertida = await conexao.json();
-        return conexaoConvertida;
-    } else {
-        return;
-    }
-}
+// async function excluirTarefa(id) {
+//     if (!id) throw new Error('ID não informado!');
+//     const conexao = await fetch(`${url}/${id}`, {
+//         method: 'DELETE'
+//     });
+//     if (!conexao.ok) {
+//         throw new Error(`HTTP error! status: ${conexao.status}`);
+//     } else if (conexao.headers.get("content-type") && conexao.headers.get("content-type").includes("application/json")) {
+//         const conexaoConvertida = await conexao.json();
+//         return conexaoConvertida;
+//     } else {
+//         return;
+//     }
+// }
 
-async function editarTarefa(id, nome, descricao, data) {
-    const conexao = await fetch(`${url}/atualizar`, {
-        method: 'PUT',
-        headers: {
-            'content-type': 'application/json'
-        },
-        body: JSON.stringify({
-            id: id,
-            nome: nome,
-            descricao: descricao,
-            data: data
-        })
-    })
-    if(!conexao) {
-        throw new Error(`HTTP error! status: ${conexao.status}`);
-    } else if (conexao.headers.get("content-type") && conexao.headers.get("content-type").includes("application/json")) {
-        const conexaoConvertida = await conexao.json();
-        return conexaoConvertida;
-    } else {
-        return;
-    }
-}
+// async function editarTarefa(id, nome, descricao, data) {
+//     const conexao = await fetch(`${url}/atualizar`, {
+//         method: 'PUT',
+//         headers: {
+//             'content-type': 'application/json'
+//         },
+//         body: JSON.stringify({
+//             id: id,
+//             nome: nome,
+//             descricao: descricao,
+//             data: data
+//         })
+//     })
+//     if(!conexao) {
+//         throw new Error(`HTTP error! status: ${conexao.status}`);
+//     } else if (conexao.headers.get("content-type") && conexao.headers.get("content-type").includes("application/json")) {
+//         const conexaoConvertida = await conexao.json();
+//         return conexaoConvertida;
+//     } else {
+//         return;
+//     }
+// }
 /*Elementos*/
 
 const nomeTarefa = document.getElementById('tf-nome') as HTMLInputElement;
@@ -149,31 +153,35 @@ let dataTarefaSelecionada:string = null;
 
 btPendentes.addEventListener('click', atualizaTarefas);
 
-btEditar.addEventListener('click', () => {
-    if(btEditar.classList.contains('menu__botao-escolha-padrao')) {
-        divEditarTarefa.classList.toggle('conteudo__show');
-        editarNome.value = nomeTarefaSelecionada;
-        editarDescricao.value = descricaoTarefaSelecionada;
-        editarData.value = dataTarefaSelecionada;
-    }
-});
+// btEditar.addEventListener('click', () => {
+//     if(btEditar.classList.contains('menu__botao-escolha-padrao')) {
+//         divEditarTarefa.classList.toggle('conteudo__show');
+//         editarNome.value = nomeTarefaSelecionada;
+//         editarDescricao.value = descricaoTarefaSelecionada;
+//         editarData.value = dataTarefaSelecionada;
+//     }
+// });
+btEditar.addEventListener('click', () => mostrarEditarTarefa(btEditar, divEditarTarefa,
+     editarNome, editarDescricao, editarData, nomeTarefaSelecionada, 
+     descricaoTarefaSelecionada, dataTarefaSelecionada));
 
 btEditarTarefa.addEventListener('click', async () => {
-    if (editarNome.value === '' || editarDescricao.value === '' || editarData.value === '') {
+    if (validaCamposTarefa(editarNome.value, editarDescricao.value, editarData.value) === false){
         avisoTarefaErro('Preencha todos os campos!');
         return;
     }
     await editarTarefa(idTarefaSelecionada, editarNome.value, editarDescricao.value, editarData.value);
     avisoTarefa('Tarefa editada com sucesso!');
-    editarNome.value = '';
-    editarDescricao.value = '';
-    editarData.value = '';
+    
     limparListaDasTarefas();
     atualizaTarefas();
-    btExcluir.classList.remove('menu__botao-padrao-excluir');
-    btEditar.classList.remove('menu__botao-escolha-padrao');
-    btExcluir.classList.add('menu__botao-padrao-excluir-disable');
-    btEditar.classList.add('menu__botao-escolha-padrao-disable');
+    // editarNome.value = '';
+    // editarDescricao.value = '';
+    // editarData.value = '';
+    // btExcluir.classList.remove('menu__botao-padrao-excluir');
+    // btEditar.classList.remove('menu__botao-escolha-padrao');
+    // btExcluir.classList.add('menu__botao-padrao-excluir-disable');
+    // btEditar.classList.add('menu__botao-escolha-padrao-disable');
 });
 
 btExcluir.addEventListener('click',async () => {
@@ -304,32 +312,32 @@ async function criarTarefa() {
     audio.play();
 }
 
-function avisoTarefa(text) {
-    const aviso = document.createElement('div');
-    aviso.className = 'alerta';
-    aviso.textContent = text;
-    document.body.appendChild(aviso);
-    setTimeout(() => {
-        aviso.classList.add('fadeOut');
-    }, 2000);
-    setTimeout(() => {
-        aviso.remove();
-    }, 3000);
+// function avisoTarefa(text) {
+//     const aviso = document.createElement('div');
+//     aviso.className = 'alerta';
+//     aviso.textContent = text;
+//     document.body.appendChild(aviso);
+//     setTimeout(() => {
+//         aviso.classList.add('fadeOut');
+//     }, 2000);
+//     setTimeout(() => {
+//         aviso.remove();
+//     }, 3000);
 
-}
+// }
 
-function avisoTarefaErro(text) {
-    const aviso = document.createElement('div');
-    aviso.className = 'alerta-erro';
-    aviso.textContent = text;
-    document.body.appendChild(aviso);
-    setTimeout(() => {
-        aviso.classList.add('fadeOut');
-    }, 2000);
-    setTimeout(() => {
-        aviso.remove();
-    }, 3000);
+// function avisoTarefaErro(text) {
+//     const aviso = document.createElement('div');
+//     aviso.className = 'alerta-erro';
+//     aviso.textContent = text;
+//     document.body.appendChild(aviso);
+//     setTimeout(() => {
+//         aviso.classList.add('fadeOut');
+//     }, 2000);
+//     setTimeout(() => {
+//         aviso.remove();
+//     }, 3000);
 
-}
+// }
 
 botaoPostTarefa.addEventListener('click', criarTarefa);
