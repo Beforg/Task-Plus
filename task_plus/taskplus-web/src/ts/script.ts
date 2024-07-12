@@ -6,8 +6,9 @@
 /*Conexao com a API*/
 
 import {adicionarTarefa, carregarTarefas, concluirTarefa, carregarTarefasConcluidas, excluirTarefa, editarTarefa} from './apiService.js';
-import {avisoTarefa, avisoTarefaErro, mostrarEditarTarefa, limpaCamposEditarTarefa} from './utils.js';
-import {validaCamposTarefa} from './validation.js';
+import {avisoTarefa, avisoTarefaErro, mostrarEditarTarefa, 
+    limpaCamposEditarTarefa, alteraClasseRemoverTarefa, formataData, montaTarefa, limparListaDasTarefas} from './utils.js';
+import {validaCamposTarefa, validaConcluido} from './validation.js';
 
 atualizaTarefas();
 // const url = 'http://localhost:8080/task'
@@ -144,6 +145,9 @@ const editarNome = document.getElementById('tf-editar-nome') as HTMLInputElement
 const editarDescricao = document.getElementById('tf-editar-desc') as HTMLInputElement;
 const editarData = document.getElementById('tf-editar-data') as HTMLInputElement;
 const btEditarTarefa = document.getElementById('botao-editar') as HTMLButtonElement;
+const listaTarefas = document.getElementById('lista-com-tarefas') as HTMLUListElement;
+const tarefaElement = document.createElement('li') as HTMLLIElement;
+tarefaElement.className = 'principal-tarefas-item';
 
 let idTarefaSelecionada:number = null;
 let nomeTarefaSelecionada:string = null;
@@ -172,8 +176,8 @@ btEditarTarefa.addEventListener('click', async () => {
     }
     await editarTarefa(idTarefaSelecionada, editarNome.value, editarDescricao.value, editarData.value);
     avisoTarefa('Tarefa editada com sucesso!');
-    
-    limparListaDasTarefas();
+    limpaCamposEditarTarefa(editarNome, editarDescricao, editarData, btExcluir, btEditar);
+    limparListaDasTarefas(listaTarefas);
     atualizaTarefas();
     // editarNome.value = '';
     // editarDescricao.value = '';
@@ -188,15 +192,16 @@ btExcluir.addEventListener('click',async () => {
     if(btExcluir.classList.contains('menu__botao-padrao-excluir')) {
         let resposta = confirm('Deseja realmente excluir a tarefa?');
         if (resposta) {
-            alert('excluído!')
             await excluirTarefa(idTarefaSelecionada);
             atualizaTarefas();
-            divEditarTarefa.classList.remove('conteudo__show');
-            divEditarTarefa.classList.add('.conteudo__escondido');
-            btExcluir.classList.remove('menu__botao-padrao-excluir');
-            btEditar.classList.remove('menu__botao-escolha-padrao');
-            btExcluir.classList.add('menu__botao-padrao-excluir-disable');
-            btEditar.classList.add('menu__botao-escolha-padrao-disable');
+            alert('excluído!')
+            alteraClasseRemoverTarefa(btEditar, btExcluir, divEditarTarefa);
+            // divEditarTarefa.classList.remove('conteudo__show');
+            // divEditarTarefa.classList.add('.conteudo__escondido');
+            // btExcluir.classList.remove('menu__botao-padrao-excluir');
+            // btEditar.classList.remove('menu__botao-escolha-padrao');
+            // btExcluir.classList.add('menu__botao-padrao-excluir-disable');
+            // btEditar.classList.add('menu__botao-escolha-padrao-disable');
         }
     }
 });
@@ -214,38 +219,40 @@ btFiltrarTarefa.addEventListener('click', () => {
 /*Carregar tarefa da API e colocar na aplicação:*/
 
 function carregarTarefasParaLista(nome,data,descricao,concluido,id) {
-    const listaTarefas = document.getElementById('lista-com-tarefas') as HTMLUListElement;
-    const tarefa = document.createElement('li') as HTMLLIElement;
-    tarefa.className = 'principal-tarefas-item';
-    
-    const dataRecebida = new Date(data);
-    const formatacaoTipo = { year: 'numeric', month: '2-digit', day: '2-digit' } as Intl.DateTimeFormatOptions;
-    const dataFormatada = dataRecebida.toLocaleDateString('pt-BR', formatacaoTipo);
-    
-    tarefa.innerHTML = `
-        <input type="checkbox" class="tarefa__checkbox">
-        <span class="tarefa__nome">${nome}</span>
-        <span class="tarefa__descricao-oculto">${descricao}</span>
-        <span class="tarefa__data">${dataFormatada}</span>
-        <p style="display: none;">${id}</p>
-    `;
+    // const listaTarefas = document.getElementById('lista-com-tarefas') as HTMLUListElement;
+    // const tarefaElement = document.createElement('li') as HTMLLIElement;
+    //tarefaElement.className = 'principal-tarefas-item';
 
-    if (concluido) {
-        const cb = tarefa.querySelector(".tarefa__checkbox") as HTMLInputElement;
+    const tarefa: Tarefa = new Tarefa(nome,descricao,data,concluido,id);
+    // const dataRecebida = new Date(data);
+    // const formatacaoTipo = { year: 'numeric', month: '2-digit', day: '2-digit' } as Intl.DateTimeFormatOptions;
+    // const dataFormatada = dataRecebida.toLocaleDateString('pt-BR', formatacaoTipo);
+    const dataFormatada: Date = formataData(tarefa.dataHora);
+    montaTarefa(tarefa, tarefaElement, dataFormatada);
+    // tarefaElement.innerHTML = `
+    //     <input type="checkbox" class="tarefa__checkbox">
+    //     <span class="tarefa__nome">${tarefa.nome}</span>
+    //     <span class="tarefa__descricao-oculto">${tarefa.descricao}</span>
+    //     <span class="tarefa__data">${dataFormatada}</span>
+    // `;
+
+
+    if (validaConcluido(tarefa)) {
+        const cb = tarefaElement.querySelector(".tarefa__checkbox") as HTMLInputElement;
         cb.checked = true;
     }
     
-    tarefa.addEventListener('click', function(event) {
+    tarefaElement.addEventListener('click', function(event) {
         const audio = new Audio("./audio/conc.mp3");
-        idTarefaSelecionada = id;
-        nomeTarefaSelecionada = nome;
-        descricaoTarefaSelecionada = descricao;
-        dataTarefaSelecionada = data;
+        idTarefaSelecionada = tarefa.id;
+        nomeTarefaSelecionada = tarefa.nome;
+        descricaoTarefaSelecionada = tarefa.descricao;
+        dataTarefaSelecionada = tarefa.dataHora;
         const cb = this.querySelector(".tarefa__checkbox") as HTMLInputElement;
-        
+        // VERIFICAÇÃO PARA QUANDO CLICAR VER SE O ALVO É O CHECKBOX
         if (event.target === cb) {
             const id = this.querySelector("p").textContent;
-            concluirTarefa(id, cb.checked);
+            concluirTarefa(tarefa.id, cb.checked);
             if (cb.checked) {
                 avisoTarefa(`Tarefa ${nome} concluída!`);
                 audio.play();
@@ -264,32 +271,32 @@ function carregarTarefasParaLista(nome,data,descricao,concluido,id) {
         }
     });
 
-    listaTarefas.appendChild(tarefa);
-}
+    listaTarefas.appendChild(tarefaElement);
+} //service
 
-function limparListaDasTarefas() {
-    const listaTarefas = document.getElementById('lista-com-tarefas');
-    while (listaTarefas.firstChild) {
-        listaTarefas.removeChild(listaTarefas.firstChild);
-    }
-}
+// function limparListaDasTarefas() {
+//     const listaTarefas = document.getElementById('lista-com-tarefas');
+//     while (listaTarefas.firstChild) {
+//         listaTarefas.removeChild(listaTarefas.firstChild);
+//     }
+// } // utils
 
 function atualizaTarefas() {
-limparListaDasTarefas();
+limparListaDasTarefas(listaTarefas);
 carregarTarefas().then(tarefas => {
     tarefas.forEach(tarefa => {
         carregarTarefasParaLista(tarefa.nome,tarefa.data,tarefa.descricao,tarefa.concluido,tarefa.id);
     });
 });
-}
+} //service
 function listarConcluidas() {
-    limparListaDasTarefas();
+    limparListaDasTarefas(listaTarefas);
     carregarTarefasConcluidas().then(tarefas => {
         tarefas.forEach(tarefa => {
             carregarTarefasParaLista(tarefa.nome,tarefa.data,tarefa.descricao,tarefa.concluido,tarefa.id);
         });
     });
-}
+} //service
 
 btConcluidas.addEventListener('click', listarConcluidas);
 
@@ -307,10 +314,10 @@ async function criarTarefa() {
     tfData.value = '';
     tfDescricao.value = '';
     tfNome.value = '';
-    limparListaDasTarefas();
+    limparListaDasTarefas(listaTarefas);
     atualizaTarefas();
     audio.play();
-}
+} //service
 
 // function avisoTarefa(text) {
 //     const aviso = document.createElement('div');

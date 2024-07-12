@@ -4,7 +4,7 @@
  */
 /*Conexao com a API*/
 import { adicionarTarefa, carregarTarefas, concluirTarefa, carregarTarefasConcluidas, excluirTarefa, editarTarefa } from './apiService.js';
-import { avisoTarefa, avisoTarefaErro, mostrarEditarTarefa } from './utils.js';
+import { avisoTarefa, avisoTarefaErro, mostrarEditarTarefa, limpaCamposEditarTarefa, alteraClasseRemoverTarefa } from './utils.js';
 import { validaCamposTarefa } from './validation.js';
 atualizaTarefas();
 // const url = 'http://localhost:8080/task'
@@ -152,6 +152,7 @@ btEditarTarefa.addEventListener('click', async () => {
     }
     await editarTarefa(idTarefaSelecionada, editarNome.value, editarDescricao.value, editarData.value);
     avisoTarefa('Tarefa editada com sucesso!');
+    limpaCamposEditarTarefa(editarNome, editarDescricao, editarData, btExcluir, btEditar);
     limparListaDasTarefas();
     atualizaTarefas();
     // editarNome.value = '';
@@ -166,15 +167,16 @@ btExcluir.addEventListener('click', async () => {
     if (btExcluir.classList.contains('menu__botao-padrao-excluir')) {
         let resposta = confirm('Deseja realmente excluir a tarefa?');
         if (resposta) {
-            alert('excluído!');
             await excluirTarefa(idTarefaSelecionada);
             atualizaTarefas();
-            divEditarTarefa.classList.remove('conteudo__show');
-            divEditarTarefa.classList.add('.conteudo__escondido');
-            btExcluir.classList.remove('menu__botao-padrao-excluir');
-            btEditar.classList.remove('menu__botao-escolha-padrao');
-            btExcluir.classList.add('menu__botao-padrao-excluir-disable');
-            btEditar.classList.add('menu__botao-escolha-padrao-disable');
+            alert('excluído!');
+            alteraClasseRemoverTarefa(btEditar, btExcluir, divEditarTarefa);
+            // divEditarTarefa.classList.remove('conteudo__show');
+            // divEditarTarefa.classList.add('.conteudo__escondido');
+            // btExcluir.classList.remove('menu__botao-padrao-excluir');
+            // btEditar.classList.remove('menu__botao-escolha-padrao');
+            // btExcluir.classList.add('menu__botao-padrao-excluir-disable');
+            // btEditar.classList.add('menu__botao-escolha-padrao-disable');
         }
     }
 });
@@ -231,13 +233,13 @@ function carregarTarefasParaLista(nome, data, descricao, concluido, id) {
         }
     });
     listaTarefas.appendChild(tarefa);
-}
+} //service
 function limparListaDasTarefas() {
     const listaTarefas = document.getElementById('lista-com-tarefas');
     while (listaTarefas.firstChild) {
         listaTarefas.removeChild(listaTarefas.firstChild);
     }
-}
+} // utils
 function atualizaTarefas() {
     limparListaDasTarefas();
     carregarTarefas().then(tarefas => {
@@ -245,7 +247,7 @@ function atualizaTarefas() {
             carregarTarefasParaLista(tarefa.nome, tarefa.data, tarefa.descricao, tarefa.concluido, tarefa.id);
         });
     });
-}
+} //service
 function listarConcluidas() {
     limparListaDasTarefas();
     carregarTarefasConcluidas().then(tarefas => {
@@ -253,7 +255,7 @@ function listarConcluidas() {
             carregarTarefasParaLista(tarefa.nome, tarefa.data, tarefa.descricao, tarefa.concluido, tarefa.id);
         });
     });
-}
+} //service
 btConcluidas.addEventListener('click', listarConcluidas);
 async function criarTarefa() {
     if (tfNome.value === '' || tfDescricao.value === '' || tfData.value === '') {
@@ -272,7 +274,7 @@ async function criarTarefa() {
     limparListaDasTarefas();
     atualizaTarefas();
     audio.play();
-}
+} //service
 // function avisoTarefa(text) {
 //     const aviso = document.createElement('div');
 //     aviso.className = 'alerta';

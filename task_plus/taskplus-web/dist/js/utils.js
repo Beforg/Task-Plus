@@ -39,3 +39,11 @@ export function limpaCamposEditarTarefa(editarNome, editarDescricao, editarData,
     btExcluir.classList.add('menu__botao-padrao-excluir-disable');
     btEditar.classList.add('menu__botao-escolha-padrao-disable');
 }
+export function alteraClasseRemoverTarefa(btEditar, btExcluir, divEditarTarefa) {
+    divEditarTarefa.classList.remove('conteudo__show');
+    divEditarTarefa.classList.add('.conteudo__escondido');
+    btExcluir.classList.remove('menu__botao-padrao-excluir');
+    btEditar.classList.remove('menu__botao-escolha-padrao');
+    btExcluir.classList.add('menu__botao-padrao-excluir-disable');
+    btEditar.classList.add('menu__botao-escolha-padrao-disable');
+}
