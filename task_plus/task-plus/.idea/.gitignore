@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+HEAD
 # Default ignored files
 /shelf/
 /workspace.xml
@@ -7,12 +7,11 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
-=======
-compiler.xml
-encodings.xml
-jarRepositores.xml
-misc.xml
-vcs.xml
-workspace.xml
-task_plus/task-plus/.idea/*
->>>>>>> new-layout
+/compiler.xml
+/encodings.xml
+/jarRepositores.xml
+/misc.xml
+/vcs.xml
+/workspace.xml
+/task_plus/task-plus/.idea/*
+
