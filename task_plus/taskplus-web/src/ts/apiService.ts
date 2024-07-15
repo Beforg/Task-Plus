@@ -1,16 +1,15 @@
 const url = 'http://localhost:8080/task'
 
-export async function adicionarTarefa(nome, descricao, data) {
-    console.log(data);
+export async function adicionarTarefaApi(tarefa: Tarefa) {
     const conexao = await fetch(url,  {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            nome: nome,
-            descricao: descricao,
-            data: data,
+            nome: tarefa.getNome,
+            descricao: tarefa.getDescricao,
+            data: tarefa.getDataHora,
             concluido: false
         })
     })
@@ -26,7 +25,7 @@ export async function adicionarTarefa(nome, descricao, data) {
     
 }
 
-export async function carregarTarefas() {
+export async function carregarTarefasApi() {
     const conexao = await fetch(url);
     if (!conexao.ok) {
         throw new Error(`HTTP error! status: ${conexao.status}`);
@@ -38,7 +37,7 @@ export async function carregarTarefas() {
     }
 }
 
-export async function concluirTarefa(id, booleano) {
+export async function concluirTarefaApi(id, booleano) {
     const conexao = await fetch(`${url}/concluir`, {
         method: 'PUT',
         headers: {
@@ -60,7 +59,7 @@ export async function concluirTarefa(id, booleano) {
     }
 }
 
-export async function carregarTarefasConcluidas(){
+export async function carregarTarefasConcluidasApi(){
     const conexao = await fetch(`${url}/concluidas`);
     if (!conexao.ok) {
         throw new Error(`HTTP error! status: ${conexao.status}`);
@@ -72,7 +71,7 @@ export async function carregarTarefasConcluidas(){
     }
 }
 
-export async function excluirTarefa(id) {
+export async function excluirTarefaApi(id) {
     if (!id) throw new Error('ID não informado!');
     const conexao: Response = await fetch(`${url}/${id}`, {
         method: 'DELETE'
@@ -87,7 +86,7 @@ export async function excluirTarefa(id) {
     }
 }
 
-export async function editarTarefa(id, nome, descricao, data) {
+export async function editarTarefaApi(id, nome, descricao, data) {
     const conexao: Response = await fetch(`${url}/atualizar`, {
         method: 'PUT',
         headers: {

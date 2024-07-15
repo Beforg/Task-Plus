@@ -5,12 +5,16 @@
 
 /*Conexao com a API*/
 
-import {adicionarTarefa, carregarTarefas, concluirTarefa, carregarTarefasConcluidas, excluirTarefa, editarTarefa} from './apiService.js';
-import {avisoTarefa, avisoTarefaErro, mostrarEditarTarefa, 
-    limpaCamposEditarTarefa, alteraClasseRemoverTarefa, formataData, montaTarefa, limparListaDasTarefas} from './utils.js';
-import {validaCamposTarefa, validaConcluido} from './validation.js';
+import {adicionarTarefaApi, carregarTarefasApi, concluirTarefaApi,
+    carregarTarefasConcluidasApi, excluirTarefaApi, editarTarefaApi} from './apiService.js';
 
-atualizaTarefas();
+import {avisoTarefa, avisoTarefaErro, mostrarEditarTarefa, 
+    limpaCamposEditarTarefa, alteraClasseRemoverTarefa, 
+    formataData, montaTarefa, limparListaDasTarefas, limpaCamposAddTarefa} from './utils.js';
+
+import {validaCamposTarefa, validaConcluido} from './validation.js';
+import { atualizaTarefas, criarTarefa, listarConcluidas} from './tarefaService.js';
+
 // const url = 'http://localhost:8080/task'
 
 // async function adicionarTarefa(nome, descricao, data) {
@@ -149,13 +153,16 @@ const listaTarefas = document.getElementById('lista-com-tarefas') as HTMLUListEl
 const tarefaElement = document.createElement('li') as HTMLLIElement;
 tarefaElement.className = 'principal-tarefas-item';
 
-let idTarefaSelecionada:number = null;
-let nomeTarefaSelecionada:string = null;
-let descricaoTarefaSelecionada:string = null;
-let dataTarefaSelecionada:string = null;
+atualizaTarefas(listaTarefas,tarefaElement);
+// let idTarefaSelecionada:number = null;
+// let nomeTarefaSelecionada:string = null;
+// let descricaoTarefaSelecionada:string = null;
+// let dataTarefaSelecionada:string = null;
+
+let tarefaAtual: Tarefa = null;
 
 
-btPendentes.addEventListener('click', atualizaTarefas);
+btPendentes.addEventListener('click', () => atualizaTarefas(listaTarefas,tarefaElement));
 
 // btEditar.addEventListener('click', () => {
 //     if(btEditar.classList.contains('menu__botao-escolha-padrao')) {
@@ -166,19 +173,18 @@ btPendentes.addEventListener('click', atualizaTarefas);
 //     }
 // });
 btEditar.addEventListener('click', () => mostrarEditarTarefa(btEditar, divEditarTarefa,
-     editarNome, editarDescricao, editarData, nomeTarefaSelecionada, 
-     descricaoTarefaSelecionada, dataTarefaSelecionada));
+     editarNome, editarDescricao, editarData,tarefaAtual));
 
 btEditarTarefa.addEventListener('click', async () => {
     if (validaCamposTarefa(editarNome.value, editarDescricao.value, editarData.value) === false){
         avisoTarefaErro('Preencha todos os campos!');
         return;
     }
-    await editarTarefa(idTarefaSelecionada, editarNome.value, editarDescricao.value, editarData.value);
+    await editarTarefaApi(tarefaAtual.getId, editarNome.value, editarDescricao.value, editarData.value);
     avisoTarefa('Tarefa editada com sucesso!');
     limpaCamposEditarTarefa(editarNome, editarDescricao, editarData, btExcluir, btEditar);
     limparListaDasTarefas(listaTarefas);
-    atualizaTarefas();
+    atualizaTarefas(listaTarefas,tarefaElement);
     // editarNome.value = '';
     // editarDescricao.value = '';
     // editarData.value = '';
@@ -192,8 +198,8 @@ btExcluir.addEventListener('click',async () => {
     if(btExcluir.classList.contains('menu__botao-padrao-excluir')) {
         let resposta = confirm('Deseja realmente excluir a tarefa?');
         if (resposta) {
-            await excluirTarefa(idTarefaSelecionada);
-            atualizaTarefas();
+            await excluirTarefaApi(tarefaAtual.getId);
+            atualizaTarefas(listaTarefas,tarefaElement);
             alert('excluído!')
             alteraClasseRemoverTarefa(btEditar, btExcluir, divEditarTarefa);
             // divEditarTarefa.classList.remove('conteudo__show');
@@ -218,48 +224,86 @@ btFiltrarTarefa.addEventListener('click', () => {
 
 /*Carregar tarefa da API e colocar na aplicação:*/
 
-function carregarTarefasParaLista(nome,data,descricao,concluido,id) {
-    // const listaTarefas = document.getElementById('lista-com-tarefas') as HTMLUListElement;
-    // const tarefaElement = document.createElement('li') as HTMLLIElement;
-    //tarefaElement.className = 'principal-tarefas-item';
+// function popularListaDeTarefas(nome,data,descricao,concluido,id) : Tarefa {
 
-    const tarefa: Tarefa = new Tarefa(nome,descricao,data,concluido,id);
-    // const dataRecebida = new Date(data);
-    // const formatacaoTipo = { year: 'numeric', month: '2-digit', day: '2-digit' } as Intl.DateTimeFormatOptions;
-    // const dataFormatada = dataRecebida.toLocaleDateString('pt-BR', formatacaoTipo);
-    const dataFormatada: Date = formataData(tarefa.dataHora);
-    montaTarefa(tarefa, tarefaElement, dataFormatada);
-    // tarefaElement.innerHTML = `
-    //     <input type="checkbox" class="tarefa__checkbox">
-    //     <span class="tarefa__nome">${tarefa.nome}</span>
-    //     <span class="tarefa__descricao-oculto">${tarefa.descricao}</span>
-    //     <span class="tarefa__data">${dataFormatada}</span>
-    // `;
-
-
-    if (validaConcluido(tarefa)) {
-        const cb = tarefaElement.querySelector(".tarefa__checkbox") as HTMLInputElement;
-        cb.checked = true;
-    }
+//     const tarefa: Tarefa = new Tarefa(nome,descricao,data,concluido,id);
+//     const dataFormatada: Date = formataData(tarefa.dataHora);
+//     montaTarefa(tarefa, tarefaElement, dataFormatada);
     
-    tarefaElement.addEventListener('click', function(event) {
-        const audio = new Audio("./audio/conc.mp3");
-        idTarefaSelecionada = tarefa.id;
-        nomeTarefaSelecionada = tarefa.nome;
-        descricaoTarefaSelecionada = tarefa.descricao;
-        dataTarefaSelecionada = tarefa.dataHora;
+//     if (validaConcluido(tarefa)) {
+//         const cb = tarefaElement.querySelector(".tarefa__checkbox") as HTMLInputElement;
+//         cb.checked = true;
+//     }
+
+//     listaTarefas.appendChild(tarefaElement);
+//     return tarefa;
+
+//     // const listaTarefas = document.getElementById('lista-com-tarefas') as HTMLUListElement;
+//     // const tarefaElement = document.createElement('li') as HTMLLIElement;
+//     //tarefaElement.className = 'principal-tarefas-item';
+//     // const dataRecebida = new Date(data);
+//     // const formatacaoTipo = { year: 'numeric', month: '2-digit', day: '2-digit' } as Intl.DateTimeFormatOptions;
+//     // const dataFormatada = dataRecebida.toLocaleDateString('pt-BR', formatacaoTipo);
+//     // tarefaElement.innerHTML = `
+//     //     <input type="checkbox" class="tarefa__checkbox">
+//     //     <span class="tarefa__nome">${tarefa.nome}</span>
+//     //     <span class="tarefa__descricao-oculto">${tarefa.descricao}</span>
+//     //     <span class="tarefa__data">${dataFormatada}</span>
+//     // `;
+    
+//     // tarefaElement.addEventListener('click', function(event) {
+//     //     const audio = new Audio("./audio/conc.mp3");
+//     //     const cb = this.querySelector(".tarefa__checkbox") as HTMLInputElement;
+
+//     //     idTarefaSelecionada = tarefa.getId;
+//     //     nomeTarefaSelecionada = tarefa.getNome;
+//     //     descricaoTarefaSelecionada = tarefa.getDescricao;
+//     //     dataTarefaSelecionada = tarefa.getDataHora;
+
+        
+//     //     // VERIFICAÇÃO PARA QUANDO CLICAR VER SE O ALVO É O CHECKBOX
+//     //     if (event.target === cb) {
+//     //         const id = this.querySelector("p").textContent;
+//     //         concluirTarefa(tarefa.id, cb.checked);
+//     //         if (cb.checked) {
+//     //             avisoTarefa(`Tarefa ${nome} concluída!`);
+//     //             audio.play();
+//     //         }
+//     //     } else {
+//     //         const todasTarefas = document.querySelectorAll('.tarefa__descricao-oculto');
+//     //         todasTarefas.forEach(tarefa => {
+//     //             tarefa.classList.remove('tarefa__descricao');
+//     //         });
+//     //         this.querySelector(".tarefa__descricao-oculto").classList.toggle('tarefa__descricao');
+//     //         btExcluir.classList.add('menu__botao-padrao-excluir');
+//     //         btEditar.classList.add('menu__botao-escolha-padrao');
+//     //         divEditarTarefa.classList.remove('conteudo__show');
+//     //         divEditarTarefa.classList.add('.conteudo__escondido');
+//     //     }
+//     // });
+
+// } //service
+
+export function selecionaTarefa(event: Event, tarefa: Tarefa) : void {
+        const audio = new Audio("./audio/conc.mp3") as HTMLAudioElement;
         const cb = this.querySelector(".tarefa__checkbox") as HTMLInputElement;
+
+        // idTarefaSelecionada = tarefa.getId;
+        // nomeTarefaSelecionada = tarefa.getNome;
+        // descricaoTarefaSelecionada = tarefa.getDescricao;
+        // dataTarefaSelecionada = tarefa.getDataHora;
+        tarefaAtual = tarefa;
+        
         // VERIFICAÇÃO PARA QUANDO CLICAR VER SE O ALVO É O CHECKBOX
         if (event.target === cb) {
-            const id = this.querySelector("p").textContent;
-            concluirTarefa(tarefa.id, cb.checked);
+            // const id = this.querySelector("p").textContent;
+            concluirTarefaApi(tarefaAtual.getId, tarefaAtual.concluirTarefa());
             if (cb.checked) {
-                avisoTarefa(`Tarefa ${nome} concluída!`);
+                avisoTarefa(`Tarefa ${tarefaAtual.getNome} concluída!`);
                 audio.play();
-                
             }
         } else {
-            const todasTarefas = document.querySelectorAll('.tarefa__descricao-oculto');
+            const todasTarefas = document.querySelectorAll('.tarefa__descricao-oculto') as NodeListOf<HTMLSpanElement>;
             todasTarefas.forEach(tarefa => {
                 tarefa.classList.remove('tarefa__descricao');
             });
@@ -269,10 +313,8 @@ function carregarTarefasParaLista(nome,data,descricao,concluido,id) {
             divEditarTarefa.classList.remove('conteudo__show');
             divEditarTarefa.classList.add('.conteudo__escondido');
         }
-    });
-
-    listaTarefas.appendChild(tarefaElement);
-} //service
+    
+}
 
 // function limparListaDasTarefas() {
 //     const listaTarefas = document.getElementById('lista-com-tarefas');
@@ -281,43 +323,47 @@ function carregarTarefasParaLista(nome,data,descricao,concluido,id) {
 //     }
 // } // utils
 
-function atualizaTarefas() {
-limparListaDasTarefas(listaTarefas);
-carregarTarefas().then(tarefas => {
-    tarefas.forEach(tarefa => {
-        carregarTarefasParaLista(tarefa.nome,tarefa.data,tarefa.descricao,tarefa.concluido,tarefa.id);
-    });
-});
-} //service
-function listarConcluidas() {
-    limparListaDasTarefas(listaTarefas);
-    carregarTarefasConcluidas().then(tarefas => {
-        tarefas.forEach(tarefa => {
-            carregarTarefasParaLista(tarefa.nome,tarefa.data,tarefa.descricao,tarefa.concluido,tarefa.id);
-        });
-    });
-} //service
+// function atualizaTarefas() {
+// limparListaDasTarefas(listaTarefas);
+// carregarTarefasApi().then(tarefas => {
+//     tarefas.forEach(tarefa => {
+//         const tarefaRecebida : Tarefa = popularListaDeTarefas(tarefa.nome,tarefa.data,tarefa.descricao,tarefa.concluido,tarefa.id);
+//         tarefaElement.addEventListener('click', (event) => selecionaTarefa(event, tarefaRecebida));
+//     });
+// });
+// } //service
+// function listarConcluidas() {
+//     limparListaDasTarefas(listaTarefas);
+//     carregarTarefasConcluidasApi().then(tarefas => {
+//         tarefas.forEach(tarefa => {
+//             popularListaDeTarefas(tarefa.nome,tarefa.data,tarefa.descricao,tarefa.concluido,tarefa.id);
+//         });
+//     });
+// } //service
 
-btConcluidas.addEventListener('click', listarConcluidas);
+btConcluidas.addEventListener('click', () => listarConcluidas(listaTarefas,tarefaElement));
 
-async function criarTarefa() {
-    if (tfNome.value === '' || tfDescricao.value === '' || tfData.value === '') { 
-        avisoTarefaErro('Preencha todos os campos!');
-        return;
-    }
-    const audio = new Audio("./audio/add.mp3");
-    const nome = tfNome.value;
-    const descricao = tfDescricao.value;
-    const data = tfData.value;
-    await adicionarTarefa(nome, descricao,data);
-    avisoTarefa('Tarefa adicionada com sucesso!');
-    tfData.value = '';
-    tfDescricao.value = '';
-    tfNome.value = '';
-    limparListaDasTarefas(listaTarefas);
-    atualizaTarefas();
-    audio.play();
-} //service
+// async function criarTarefa() {
+//     if (tfNome.value === '' || tfDescricao.value === '' || tfData.value === '') { 
+//         avisoTarefaErro('Preencha todos os campos!');
+//         return;
+//     }
+//     const audio = new Audio("./audio/add.mp3") as HTMLAudioElement;
+
+//     const newTarefa:Tarefa = new Tarefa(null,tfNome.value,tfDescricao.value,tfData.value,false);
+//     await adicionarTarefaApi(newTarefa);
+//     avisoTarefa('Tarefa adicionada com sucesso!');
+//     limpaCamposAddTarefa(tfNome, tfDescricao, tfData);
+//     limparListaDasTarefas(listaTarefas);
+//     atualizaTarefas();
+//     audio.play();
+//     // const nome = tfNome.value;
+//     // const descricao = tfDescricao.value;
+//     // const data = tfData.value;
+//     // tfData.value = '';
+//     // tfDescricao.value = '';
+//     // tfNome.value = '';
+// } //service
 
 // function avisoTarefa(text) {
 //     const aviso = document.createElement('div');
@@ -347,4 +393,4 @@ async function criarTarefa() {
 
 // }
 
-botaoPostTarefa.addEventListener('click', criarTarefa);
+botaoPostTarefa.addEventListener('click', () => criarTarefa(tfNome, tfDescricao, tfData, listaTarefas, tarefaElement));

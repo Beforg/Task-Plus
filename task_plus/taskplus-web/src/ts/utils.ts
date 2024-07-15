@@ -28,12 +28,12 @@ export function avisoTarefaErro(text: string) : void {
 
 export function mostrarEditarTarefa(btEditar: HTMLButtonElement, divEditarTarefa: HTMLDivElement, 
     editarNome: HTMLInputElement, editarDescricao: HTMLInputElement, editarData: HTMLInputElement,
-    nomeTarefaSelecionada: string, descricaoTarefaSelecionada: string, dataTarefaSelecionada: string) : void {
+    tarefa: Tarefa) : void {
     if(btEditar.classList.contains('menu__botao-escolha-padrao')) {
         divEditarTarefa.classList.toggle('conteudo__show');
-        editarNome.value = nomeTarefaSelecionada;
-        editarDescricao.value = descricaoTarefaSelecionada;
-        editarData.value = dataTarefaSelecionada;
+        editarNome.value = tarefa.getNome;
+        editarDescricao.value = tarefa.getDescricao;
+        editarData.value = tarefa.getDataHora;
     }
 }
 
@@ -77,4 +77,10 @@ export function limparListaDasTarefas(listaTarefas: HTMLUListElement) : void {
     while (listaTarefas.firstChild) {
         listaTarefas.removeChild(listaTarefas.firstChild);
     }
+}
+
+export function limpaCamposAddTarefa(tfNome: HTMLInputElement, tfDescricao: HTMLInputElement, tfData: HTMLInputElement) : void {
+    tfNome.value = '';
+    tfDescricao.value = '';
+    tfData.value = '';
 }
