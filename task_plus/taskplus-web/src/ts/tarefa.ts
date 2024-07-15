@@ -14,7 +14,6 @@ class Tarefa {
         this.concluido = concluido;
     }
     
-    // GETTERS
     get getId() {
         return this.id;
     }
@@ -35,8 +34,6 @@ class Tarefa {
         return this.concluido;
     }
 
-    // SETTERS
-
     set setId(id: number) {
         this.id = id;
     }
@@ -56,8 +53,6 @@ class Tarefa {
     set setConcluido(concluido: boolean) {
         this.concluido = concluido;
     }
-
-    // MÉTODOS
 
     public concluirTarefa() : boolean {
         if (this.concluido == true) {

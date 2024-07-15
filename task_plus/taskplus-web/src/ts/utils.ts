@@ -64,8 +64,8 @@ export function formataData(data: string ) : Date {
     return new Date(dataFormatada);
 }
 
-export function montaTarefa(tarefa, tarefaElement: HTMLLIElement, dataFormatada: Date) : void {
-    tarefaElement.innerHTML = `
+export function montaTarefa(tarefa, cardTarefa: HTMLLIElement, dataFormatada: Date) : void {
+    cardTarefa.innerHTML = `
     <input type="checkbox" class="tarefa__checkbox">
     <span class="tarefa__nome">${tarefa.nome}</span>
     <span class="tarefa__descricao-oculto">${tarefa.descricao}</span>

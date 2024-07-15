@@ -3,130 +3,8 @@
  * Task+
  */
 
-/*Conexao com a API*/
-
-import {adicionarTarefaApi, carregarTarefasApi, concluirTarefaApi,
-    carregarTarefasConcluidasApi, excluirTarefaApi, editarTarefaApi} from './apiService.js';
-
-import {avisoTarefa, avisoTarefaErro, mostrarEditarTarefa, 
-    limpaCamposEditarTarefa, alteraClasseRemoverTarefa, 
-    formataData, montaTarefa, limparListaDasTarefas, limpaCamposAddTarefa} from './utils.js';
-
-import {validaCamposTarefa, validaConcluido} from './validation.js';
-import { atualizaTarefas, criarTarefa, listarConcluidas} from './tarefaService.js';
-
-// const url = 'http://localhost:8080/task'
-
-// async function adicionarTarefa(nome, descricao, data) {
-//     console.log(data);
-//     const conexao = await fetch(url,  {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify({
-//             nome: nome,
-//             descricao: descricao,
-//             data: data,
-//             concluido: false
-//         })
-//     })
-
-//     if (!conexao.ok) {
-//         throw new Error(`HTTP error! status: ${conexao.status}`);
-//     } else if (conexao.headers.get("content-type") && conexao.headers.get("content-type").includes("application/json")) {
-//         const conexaoConvertida = await conexao.json();
-//         return conexaoConvertida;
-//     } else {
-//         return;
-//     }
-    
-// }
-
-// async function carregarTarefas() {
-//     const conexao = await fetch(url);
-//     if (!conexao.ok) {
-//         throw new Error(`HTTP error! status: ${conexao.status}`);
-//     } else if (conexao.headers.get("content-type") && conexao.headers.get("content-type").includes("application/json")) {
-//         const conexaoConvertida = await conexao.json();
-//         return conexaoConvertida;
-//     } else {
-//         return;
-//     }
-// }
-
-// async function concluirTarefa(id, booleano) {
-//     const conexao = await fetch(`${url}/concluir`, {
-//         method: 'PUT',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify({
-//             concluido: booleano,
-//             id: id
-//         })
-//     });
-
-//     if (!conexao.ok) {
-//         throw new Error(`HTTP error! status: ${conexao.status}`);
-//     } else if (conexao.headers.get("content-type") && conexao.headers.get("content-type").includes("application/json")) {
-//         const conexaoConvertida = await conexao.json();
-//         return conexaoConvertida;
-//     } else {
-//         return;
-//     }
-// }
-
-// async function carregarTarefasConcluidas(){
-//     const conexao = await fetch(`${url}/concluidas`);
-//     if (!conexao.ok) {
-//         throw new Error(`HTTP error! status: ${conexao.status}`);
-//     } else if (conexao.headers.get("content-type") && conexao.headers.get("content-type").includes("application/json")) {
-//         const conexaoConvertida = await conexao.json();
-//         return conexaoConvertida;
-//     } else {
-//         return;
-//     }
-// }
-
-// async function excluirTarefa(id) {
-//     if (!id) throw new Error('ID não informado!');
-//     const conexao = await fetch(`${url}/${id}`, {
-//         method: 'DELETE'
-//     });
-//     if (!conexao.ok) {
-//         throw new Error(`HTTP error! status: ${conexao.status}`);
-//     } else if (conexao.headers.get("content-type") && conexao.headers.get("content-type").includes("application/json")) {
-//         const conexaoConvertida = await conexao.json();
-//         return conexaoConvertida;
-//     } else {
-//         return;
-//     }
-// }
-
-// async function editarTarefa(id, nome, descricao, data) {
-//     const conexao = await fetch(`${url}/atualizar`, {
-//         method: 'PUT',
-//         headers: {
-//             'content-type': 'application/json'
-//         },
-//         body: JSON.stringify({
-//             id: id,
-//             nome: nome,
-//             descricao: descricao,
-//             data: data
-//         })
-//     })
-//     if(!conexao) {
-//         throw new Error(`HTTP error! status: ${conexao.status}`);
-//     } else if (conexao.headers.get("content-type") && conexao.headers.get("content-type").includes("application/json")) {
-//         const conexaoConvertida = await conexao.json();
-//         return conexaoConvertida;
-//     } else {
-//         return;
-//     }
-// }
-/*Elementos*/
+import {avisoTarefa,mostrarEditarTarefa} from './utils.js';
+import { atualizaTarefas, criarTarefa, listarConcluidas, excluirTarefa, concluirTarefa,editarTarefa} from './tarefaService.js';
 
 const nomeTarefa = document.getElementById('tf-nome') as HTMLInputElement;
 const descricaoTarefa = document.getElementById('tf-descricao') as HTMLInputElement;
@@ -149,155 +27,43 @@ const editarNome = document.getElementById('tf-editar-nome') as HTMLInputElement
 const editarDescricao = document.getElementById('tf-editar-desc') as HTMLInputElement;
 const editarData = document.getElementById('tf-editar-data') as HTMLInputElement;
 const btEditarTarefa = document.getElementById('botao-editar') as HTMLButtonElement;
-const listaTarefas = document.getElementById('lista-com-tarefas') as HTMLUListElement;
+const cardTarefa = document.getElementById('lista-com-tarefas') as HTMLUListElement;
 const tarefaElement = document.createElement('li') as HTMLLIElement;
 tarefaElement.className = 'principal-tarefas-item';
 
-atualizaTarefas(listaTarefas,tarefaElement);
-// let idTarefaSelecionada:number = null;
-// let nomeTarefaSelecionada:string = null;
-// let descricaoTarefaSelecionada:string = null;
-// let dataTarefaSelecionada:string = null;
-
+atualizaTarefas(cardTarefa,tarefaElement);
 let tarefaAtual: Tarefa = null;
 
 
-btPendentes.addEventListener('click', () => atualizaTarefas(listaTarefas,tarefaElement));
-
-// btEditar.addEventListener('click', () => {
-//     if(btEditar.classList.contains('menu__botao-escolha-padrao')) {
-//         divEditarTarefa.classList.toggle('conteudo__show');
-//         editarNome.value = nomeTarefaSelecionada;
-//         editarDescricao.value = descricaoTarefaSelecionada;
-//         editarData.value = dataTarefaSelecionada;
-//     }
-// });
+btPendentes.addEventListener('click', () => atualizaTarefas(cardTarefa,tarefaElement));
 btEditar.addEventListener('click', () => mostrarEditarTarefa(btEditar, divEditarTarefa,
      editarNome, editarDescricao, editarData,tarefaAtual));
 
-btEditarTarefa.addEventListener('click', async () => {
-    if (validaCamposTarefa(editarNome.value, editarDescricao.value, editarData.value) === false){
-        avisoTarefaErro('Preencha todos os campos!');
-        return;
-    }
-    await editarTarefaApi(tarefaAtual.getId, editarNome.value, editarDescricao.value, editarData.value);
-    avisoTarefa('Tarefa editada com sucesso!');
-    limpaCamposEditarTarefa(editarNome, editarDescricao, editarData, btExcluir, btEditar);
-    limparListaDasTarefas(listaTarefas);
-    atualizaTarefas(listaTarefas,tarefaElement);
-    // editarNome.value = '';
-    // editarDescricao.value = '';
-    // editarData.value = '';
-    // btExcluir.classList.remove('menu__botao-padrao-excluir');
-    // btEditar.classList.remove('menu__botao-escolha-padrao');
-    // btExcluir.classList.add('menu__botao-padrao-excluir-disable');
-    // btEditar.classList.add('menu__botao-escolha-padrao-disable');
-});
+btEditarTarefa.addEventListener('click', async () => editarTarefa(tarefaAtual,editarNome,editarDescricao,
+    editarData,btExcluir,btEditar,cardTarefa,tarefaElement));
 
 btExcluir.addEventListener('click',async () => {
     if(btExcluir.classList.contains('menu__botao-padrao-excluir')) {
         let resposta = confirm('Deseja realmente excluir a tarefa?');
         if (resposta) {
-            await excluirTarefaApi(tarefaAtual.getId);
-            atualizaTarefas(listaTarefas,tarefaElement);
-            alert('excluído!')
-            alteraClasseRemoverTarefa(btEditar, btExcluir, divEditarTarefa);
-            // divEditarTarefa.classList.remove('conteudo__show');
-            // divEditarTarefa.classList.add('.conteudo__escondido');
-            // btExcluir.classList.remove('menu__botao-padrao-excluir');
-            // btEditar.classList.remove('menu__botao-escolha-padrao');
-            // btExcluir.classList.add('menu__botao-padrao-excluir-disable');
-            // btEditar.classList.add('menu__botao-escolha-padrao-disable');
+            excluirTarefa(tarefaAtual, cardTarefa, tarefaElement, btEditar, btExcluir, divEditarTarefa);
         }
     }
 });
 
-btAddTarefa.addEventListener('click', () => {
-    divAddTarefa.classList.toggle('conteudo__show');
-});
-
-btFiltrarTarefa.addEventListener('click', () => {
-    divFiltrarTarefa.classList.toggle('conteudo__show');
-});
-
-
-
-/*Carregar tarefa da API e colocar na aplicação:*/
-
-// function popularListaDeTarefas(nome,data,descricao,concluido,id) : Tarefa {
-
-//     const tarefa: Tarefa = new Tarefa(nome,descricao,data,concluido,id);
-//     const dataFormatada: Date = formataData(tarefa.dataHora);
-//     montaTarefa(tarefa, tarefaElement, dataFormatada);
-    
-//     if (validaConcluido(tarefa)) {
-//         const cb = tarefaElement.querySelector(".tarefa__checkbox") as HTMLInputElement;
-//         cb.checked = true;
-//     }
-
-//     listaTarefas.appendChild(tarefaElement);
-//     return tarefa;
-
-//     // const listaTarefas = document.getElementById('lista-com-tarefas') as HTMLUListElement;
-//     // const tarefaElement = document.createElement('li') as HTMLLIElement;
-//     //tarefaElement.className = 'principal-tarefas-item';
-//     // const dataRecebida = new Date(data);
-//     // const formatacaoTipo = { year: 'numeric', month: '2-digit', day: '2-digit' } as Intl.DateTimeFormatOptions;
-//     // const dataFormatada = dataRecebida.toLocaleDateString('pt-BR', formatacaoTipo);
-//     // tarefaElement.innerHTML = `
-//     //     <input type="checkbox" class="tarefa__checkbox">
-//     //     <span class="tarefa__nome">${tarefa.nome}</span>
-//     //     <span class="tarefa__descricao-oculto">${tarefa.descricao}</span>
-//     //     <span class="tarefa__data">${dataFormatada}</span>
-//     // `;
-    
-//     // tarefaElement.addEventListener('click', function(event) {
-//     //     const audio = new Audio("./audio/conc.mp3");
-//     //     const cb = this.querySelector(".tarefa__checkbox") as HTMLInputElement;
-
-//     //     idTarefaSelecionada = tarefa.getId;
-//     //     nomeTarefaSelecionada = tarefa.getNome;
-//     //     descricaoTarefaSelecionada = tarefa.getDescricao;
-//     //     dataTarefaSelecionada = tarefa.getDataHora;
-
-        
-//     //     // VERIFICAÇÃO PARA QUANDO CLICAR VER SE O ALVO É O CHECKBOX
-//     //     if (event.target === cb) {
-//     //         const id = this.querySelector("p").textContent;
-//     //         concluirTarefa(tarefa.id, cb.checked);
-//     //         if (cb.checked) {
-//     //             avisoTarefa(`Tarefa ${nome} concluída!`);
-//     //             audio.play();
-//     //         }
-//     //     } else {
-//     //         const todasTarefas = document.querySelectorAll('.tarefa__descricao-oculto');
-//     //         todasTarefas.forEach(tarefa => {
-//     //             tarefa.classList.remove('tarefa__descricao');
-//     //         });
-//     //         this.querySelector(".tarefa__descricao-oculto").classList.toggle('tarefa__descricao');
-//     //         btExcluir.classList.add('menu__botao-padrao-excluir');
-//     //         btEditar.classList.add('menu__botao-escolha-padrao');
-//     //         divEditarTarefa.classList.remove('conteudo__show');
-//     //         divEditarTarefa.classList.add('.conteudo__escondido');
-//     //     }
-//     // });
-
-// } //service
+btAddTarefa.addEventListener('click', () => {divAddTarefa.classList.toggle('conteudo__show')});
+btFiltrarTarefa.addEventListener('click', () => { divFiltrarTarefa.classList.toggle('conteudo__show');});
+btConcluidas.addEventListener('click', () => listarConcluidas(cardTarefa,tarefaElement));
+botaoPostTarefa.addEventListener('click', () => criarTarefa(tfNome, tfDescricao, tfData, cardTarefa, tarefaElement));
 
 export function selecionaTarefa(event: Event, tarefa: Tarefa) : void {
         const audio = new Audio("./audio/conc.mp3") as HTMLAudioElement;
         const cb = this.querySelector(".tarefa__checkbox") as HTMLInputElement;
-
-        // idTarefaSelecionada = tarefa.getId;
-        // nomeTarefaSelecionada = tarefa.getNome;
-        // descricaoTarefaSelecionada = tarefa.getDescricao;
-        // dataTarefaSelecionada = tarefa.getDataHora;
         tarefaAtual = tarefa;
         
         // VERIFICAÇÃO PARA QUANDO CLICAR VER SE O ALVO É O CHECKBOX
         if (event.target === cb) {
-            // const id = this.querySelector("p").textContent;
-            concluirTarefaApi(tarefaAtual.getId, tarefaAtual.concluirTarefa());
+            concluirTarefa(tarefaAtual);
             if (cb.checked) {
                 avisoTarefa(`Tarefa ${tarefaAtual.getNome} concluída!`);
                 audio.play();
@@ -316,81 +82,4 @@ export function selecionaTarefa(event: Event, tarefa: Tarefa) : void {
     
 }
 
-// function limparListaDasTarefas() {
-//     const listaTarefas = document.getElementById('lista-com-tarefas');
-//     while (listaTarefas.firstChild) {
-//         listaTarefas.removeChild(listaTarefas.firstChild);
-//     }
-// } // utils
 
-// function atualizaTarefas() {
-// limparListaDasTarefas(listaTarefas);
-// carregarTarefasApi().then(tarefas => {
-//     tarefas.forEach(tarefa => {
-//         const tarefaRecebida : Tarefa = popularListaDeTarefas(tarefa.nome,tarefa.data,tarefa.descricao,tarefa.concluido,tarefa.id);
-//         tarefaElement.addEventListener('click', (event) => selecionaTarefa(event, tarefaRecebida));
-//     });
-// });
-// } //service
-// function listarConcluidas() {
-//     limparListaDasTarefas(listaTarefas);
-//     carregarTarefasConcluidasApi().then(tarefas => {
-//         tarefas.forEach(tarefa => {
-//             popularListaDeTarefas(tarefa.nome,tarefa.data,tarefa.descricao,tarefa.concluido,tarefa.id);
-//         });
-//     });
-// } //service
-
-btConcluidas.addEventListener('click', () => listarConcluidas(listaTarefas,tarefaElement));
-
-// async function criarTarefa() {
-//     if (tfNome.value === '' || tfDescricao.value === '' || tfData.value === '') { 
-//         avisoTarefaErro('Preencha todos os campos!');
-//         return;
-//     }
-//     const audio = new Audio("./audio/add.mp3") as HTMLAudioElement;
-
-//     const newTarefa:Tarefa = new Tarefa(null,tfNome.value,tfDescricao.value,tfData.value,false);
-//     await adicionarTarefaApi(newTarefa);
-//     avisoTarefa('Tarefa adicionada com sucesso!');
-//     limpaCamposAddTarefa(tfNome, tfDescricao, tfData);
-//     limparListaDasTarefas(listaTarefas);
-//     atualizaTarefas();
-//     audio.play();
-//     // const nome = tfNome.value;
-//     // const descricao = tfDescricao.value;
-//     // const data = tfData.value;
-//     // tfData.value = '';
-//     // tfDescricao.value = '';
-//     // tfNome.value = '';
-// } //service
-
-// function avisoTarefa(text) {
-//     const aviso = document.createElement('div');
-//     aviso.className = 'alerta';
-//     aviso.textContent = text;
-//     document.body.appendChild(aviso);
-//     setTimeout(() => {
-//         aviso.classList.add('fadeOut');
-//     }, 2000);
-//     setTimeout(() => {
-//         aviso.remove();
-//     }, 3000);
-
-// }
-
-// function avisoTarefaErro(text) {
-//     const aviso = document.createElement('div');
-//     aviso.className = 'alerta-erro';
-//     aviso.textContent = text;
-//     document.body.appendChild(aviso);
-//     setTimeout(() => {
-//         aviso.classList.add('fadeOut');
-//     }, 2000);
-//     setTimeout(() => {
-//         aviso.remove();
-//     }, 3000);
-
-// }
-
-botaoPostTarefa.addEventListener('click', () => criarTarefa(tfNome, tfDescricao, tfData, listaTarefas, tarefaElement));
